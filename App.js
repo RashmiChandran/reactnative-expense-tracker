@@ -32,11 +32,17 @@ import AddExpense from "./screens/AddExpense";
 import { NativeBaseProvider } from 'native-base';
 import Theme from "./theme/theme";
 const Tab = createBottomTabNavigator();
+
+const config = {
+  dependencies: {
+    'linear-gradient': require('react-native-linear-gradient').default,
+  },
+};
 const App: () => Node = () => {
  
 
   return (
-     <NativeBaseProvider theme={Theme}>
+     <NativeBaseProvider theme={Theme} config={config}>
       <NavigationContainer>
         <Tab.Navigator 
         screenOptions={({route})=>({

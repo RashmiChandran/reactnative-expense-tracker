@@ -10,6 +10,7 @@ const Home = ({navigation }) => {
     const [incomeArr, setIncomeArr] = useState([]);
     const [expenseArr, setExpenseArr] = useState([]);
     const isFocused = useIsFocused();
+    const [totalAmount, setTotalAmount] = useState({});
     
     useEffect(()=>{
         getTransactionList();
@@ -19,8 +20,8 @@ const Home = ({navigation }) => {
             const storedValue = await AsyncStorage.getItem('@transaction_list');
             const transactionList = await JSON.parse(storedValue);
             const storedTotalAmount = await AsyncStorage.getItem('@total_amount');
-            const totalAmountStored = await JSON.parse(storedValue);
-            console.log("total Amount", storedTotalAmount)
+            const totalAmountStored = await JSON.parse(storedTotalAmount);
+            setTotalAmount(totalAmountStored);
             formTransactionArr(transactionList);
     };
 
@@ -38,30 +39,70 @@ const Home = ({navigation }) => {
             // });
             // setExpenseArr(expenseTransactionArr);
             // setIncomeArr(incomeTransactionArr);
-            console.log("Expense",transactionData);
-            console.log("Income",transactionData.totalIncome);
         }
         
     }
 
     return (
        
-            <Container style={styles.container}>
+            <Box w="100%" justifyContent="center">
+            <Box
+                bg={{
+                    linearGradient: {
+                    colors: ['primary.200','#FAFAC6'],
+                    start: [0, 0],
+                    end: [1, 0],
+                    },
+                }}
+                p={6}
+                rounded="xl"
+                m={6}
+                shadow={9}
+                 alignItems="center">
                 <Box>
-                    <Center>Income</Center>
-                    <Text></Text>
+                    <Text style={styles.labelText}>Total Balance</Text>
+                    <Center>
+                        <Text style={styles.balanceAmount}>$ {totalAmount.totalIncome - totalAmount.totalExpense}</Text>
+                    </Center>
                 </Box>
-                <Box>
-                    <Center>Expense</Center>
-                    <Text></Text>
-                </Box>
-                <Stack space={3} alignItems="flex-end">
-                   <HStack space={3} alignItems="flex-end">
-                        <Button onPress={() => navigation.navigate('Add',{type:"Expense"})} startIcon={<FontAwesome name={"plus"} size={10} color={"#FFFFFF"}/>}>Expense</Button>
-                        <Button onPress={() => navigation.navigate('Add', {type:"Income"})} startIcon={<FontAwesome name={"plus"} size={10} color={"#FFFFFF"}/>}>Income</Button>
-                    </HStack>
-                </Stack>
-            </Container>
+                 <Container>
+                    <Stack alignItems="flex-end">
+                        <HStack justifyContent="center"  space={9}>
+                            <HStack flexDirection="row" p={3} space={3} >
+                                <Center>
+                                    <FontAwesome name={"arrow-circle-up"} size={25} color={"#256D1B"} />
+                                </Center>
+                                <Box>
+                                    <Text style={styles.labelText}>Income</Text>
+                                    <Text style={styles.amountText}>$ {totalAmount.totalIncome}</Text>
+                                </Box>
+                            </HStack>
+                            <HStack flexDirection="row" p={3} space={3}>
+                                <Center>
+                                    <FontAwesome name={"arrow-circle-down"} size={25} color={"#DC136C"}/>
+                                </Center>
+                                <Box>
+                                    <Text style={styles.labelText}>Expense</Text>
+                                    <Text style={styles.amountText}>$ {totalAmount.totalExpense}</Text>
+                                </Box>
+                            </HStack>
+                        </HStack>
+                    </Stack>
+                </Container>
+            </Box>
+            <Box alignItems="center" justifyContent="center" width="100%">
+               <Center alignItems="center" justifyContent="center" width="100%">
+                <Container alignItems="center">
+                    <Stack alignItems="center">
+                    <HStack space={5} alignItems="center">
+                            <Button onPress={() => navigation.navigate('Add',{type:"Expense"})} startIcon={<FontAwesome name={"plus"} size={10} color={"#FFFFFF"}/>}>Expense</Button>
+                            <Button onPress={() => navigation.navigate('Add', {type:"Income"})} startIcon={<FontAwesome name={"plus"} size={10} color={"#FFFFFF"}/>}>Income</Button>
+                        </HStack>
+                    </Stack>
+                </Container>
+            </Center>
+            </Box>
+            </Box>
     )
 }
 
@@ -74,5 +115,21 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         flexDirection: "row"
+    },
+    bannerCard: {
+        width: '100%'
+    },
+    labelText: {
+        fontSize: 15,
+        textAlign: "center"
+    },
+    balanceAmount: {
+        fontSize: 25,
+        fontWeight: "bold"
+
+    },
+    amountText : {
+        fontSize: 20,
+        fontWeight: "bold"
     }
 })
