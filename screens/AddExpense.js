@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {View} from 'react-native';
+import {View,  Pressable} from 'react-native';
 
 import {
   Box,
@@ -15,12 +15,15 @@ import {
   IconButton,
   FormControl,
   NumberInputField ,
-  NumberInput
+  NumberInput,
+  Alert, 
+  Modal,
 } from 'native-base';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Theme from "../theme/theme";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import CategoryList from './CategoryList';
 
 const AddExpense = ({route, navigation}) => {
   const {type} = route.params;
@@ -84,24 +87,41 @@ const AddExpense = ({route, navigation}) => {
     }
   }
 
-  const categoryChange = (event) => {
-    setCategory(event);
-  };
 
   const amountChange = (event) => {
         setAmount(event.nativeEvent.text);
 
   }
-
+  const [modalVisible, setModalVisible] = useState(false);
+  const initialRef = React.useRef(null);
+  const [selectedCategoryItem, setSelectedCategoryItem] = useState(null)
+  const handleModalClose = (selectedCategory) =>{
+     setCategory(selectedCategory.name);
+    setSelectedCategoryItem(selectedCategory)
+  }
   return (
     <View>
-      <Heading size="lg" bg={Theme.colors.primary["500"]} p={4} color={"#ffffff"} width={"100%"} position="relative">
-        Add {type}
-        <IconButton
-      variant="solid" 
-      onPress={() => navigation.navigate('Spending')}     
-      icon={<Icon size="md" as={<MaterialIcons name="close" />} color="white" />
-       } />
+        <Modal
+        isOpen={modalVisible}
+        onClose={setModalVisible}
+        initialFocusRef={initialRef}
+      >
+       <CategoryList categoryType={type} selectedCategoryId={selectedCategoryItem && selectedCategoryItem.categoryId} modalVisible={setModalVisible} handleModalClose={handleModalClose}/>
+      </Modal>
+    
+      <Heading  bg={Theme.colors.primary["500"]} p={4}  width={"100%"}>
+          <Box width={"200px"} position="relative">
+        <Stack width={"100%"} position="relative">
+          <HStack alignItems="center" width={"100%"} position="relative">
+            <Text color={"#ffffff"} >Add {type}</Text>
+              <IconButton
+            variant="solid" 
+            onPress={() => navigation.navigate('Spending')}     
+            icon={<Icon size="md" as={<MaterialIcons name="close" />} color="white" alignSelf="flex-end" />
+            } />
+          </HStack>
+        </Stack>
+            </Box>
       </Heading>
       <Box border={1} borderRadius="md" m={7} p={5} bg={'#ffffff'}>
         <Box w="100%">
@@ -161,10 +181,12 @@ const AddExpense = ({route, navigation}) => {
               <Center size={20}>
                 <FormControl.Label>Category</FormControl.Label>
               </Center>
-              <Flex w={'75%'}>
+              <Flex w={'75%'}  >
+                <Pressable onPress={() => setModalVisible(!modalVisible)}>
                 <Input
                   value={category}
-                  onChangeText = {categoryChange}
+                  isDisabled={true}
+                  
                   InputRightElement={
                     <Icon
                       as={<MaterialIcons name="category" />}
@@ -186,6 +208,7 @@ const AddExpense = ({route, navigation}) => {
                     placeholderTextColor: 'blueGray.50',
                   }}
                 />
+                </Pressable>
               </Flex>
             </HStack>
           </Stack>

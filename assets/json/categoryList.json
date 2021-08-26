@@ -1,0 +1,41 @@
+{
+    "expenseCategory": [
+        {
+            "name": "Food",
+            "categoryId": "E1",
+            "iconName": "glass"
+        },
+        {
+            "name": "Shopping",
+            "categoryId": "E2",
+            "iconName": "shopping-bag"
+        },
+        {
+            "name": "Entertainment",
+            "categoryId": "E3",
+            "iconName": "ticket"
+        },
+        {
+            "name": "Travel",
+            "categoryId": "E4",
+            "iconName": "bus"
+        },
+        {
+            "name": "Home Rent",
+            "categoryId": "E5",
+            "iconName": "home"
+        },
+        {
+            "name": "Pet Groom",
+            "categoryId": "E6",
+            "iconName": "paw"
+        }
+    ],
+    "incomeCategory": [
+        {
+            "name": "Salary",
+            "categoryId": "I1",
+            "iconName": "money"
+        }
+    ]
+}
