@@ -18,7 +18,7 @@ const CategoryList = ({modalVisible, categoryType, selectedCategoryId, handleMod
   return (
     <Modal.Content>
       <Modal.CloseButton />
-      <Modal.Header>Choose a Category</Modal.Header>
+      <Modal.Header>Choose a category</Modal.Header>
       <Modal.Body>    
         <List space={2} my={2}  border={0}>
         {categoryList && categoryList.map((item,index)=>(

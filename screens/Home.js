@@ -10,7 +10,7 @@ const Home = ({navigation }) => {
     const [incomeArr, setIncomeArr] = useState([]);
     const [expenseArr, setExpenseArr] = useState([]);
     const isFocused = useIsFocused();
-    const [totalAmount, setTotalAmount] = useState({});
+    const [totalAmount, setTotalAmount] = useState({totalIncome:0, totalExpense: 0});
     
     useEffect(()=>{
         getTransactionList();
@@ -20,7 +20,10 @@ const Home = ({navigation }) => {
             const storedValue = await AsyncStorage.getItem('@transaction_list');
             const transactionList = await JSON.parse(storedValue);
             const storedTotalAmount = await AsyncStorage.getItem('@total_amount');
+            if(storedTotalAmount){
+
             const totalAmountStored = await JSON.parse(storedTotalAmount);
+            }
             setTotalAmount(totalAmountStored);
             formTransactionArr(transactionList);
     };
@@ -62,7 +65,7 @@ const Home = ({navigation }) => {
                 <Box>
                     <Text style={styles.labelText}>Total Balance</Text>
                     <Center>
-                        <Text style={styles.balanceAmount}>$ {totalAmount.totalIncome - totalAmount.totalExpense}</Text>
+                        <Text style={styles.balanceAmount}>₹ {totalAmount.totalIncome - totalAmount.totalExpense}</Text>
                     </Center>
                 </Box>
                  <Container>
@@ -74,7 +77,7 @@ const Home = ({navigation }) => {
                                 </Center>
                                 <Box>
                                     <Text style={styles.labelText}>Income</Text>
-                                    <Text style={styles.amountText}>$ {totalAmount.totalIncome}</Text>
+                                    <Text style={styles.amountText}>₹ {totalAmount.totalIncome}</Text>
                                 </Box>
                             </HStack>
                             <HStack flexDirection="row" p={3} space={3}>
@@ -83,7 +86,7 @@ const Home = ({navigation }) => {
                                 </Center>
                                 <Box>
                                     <Text style={styles.labelText}>Expense</Text>
-                                    <Text style={styles.amountText}>$ {totalAmount.totalExpense}</Text>
+                                    <Text style={styles.amountText}>₹ {totalAmount.totalExpense}</Text>
                                 </Box>
                             </HStack>
                         </HStack>

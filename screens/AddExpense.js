@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useRef} from 'react';
 import {View,  Pressable} from 'react-native';
 
 import {
@@ -14,8 +14,6 @@ import {
   Heading,
   IconButton,
   FormControl,
-  NumberInputField ,
-  NumberInput,
   Alert, 
   Modal,
 } from 'native-base';
@@ -24,13 +22,14 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import Theme from "../theme/theme";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CategoryList from './CategoryList';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 const AddExpense = ({route, navigation}) => {
   const {type} = route.params;
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
   const [category, setCategory] = useState();
-  const [amount, setAmount] = useState();
+  const [amount, setAmount] = useState(null);
 
   const shortid = require('shortid');
 
@@ -43,7 +42,6 @@ const AddExpense = ({route, navigation}) => {
   const showDatepicker = () => {
     setShow(true);
   };
-
   const AddValue = async () =>{
     try {
       let transactionObj = {
@@ -81,7 +79,11 @@ const AddExpense = ({route, navigation}) => {
         await AsyncStorage.setItem('@total_amount', JSON.stringify(totalAmountStored));
         await AsyncStorage.setItem('@transaction_list', JSON.stringify(initialTransactionList));
       }
-      navigation.navigate('Spending')
+      navigation.navigate('Spending');
+      setDate(new Date());
+      setCategory(null);
+      setAmount(null);
+      setSelectedCategoryItem(null);
     } catch(e) {
       console.log("err",e)
     }
@@ -94,11 +96,13 @@ const AddExpense = ({route, navigation}) => {
   }
   const [modalVisible, setModalVisible] = useState(false);
   const initialRef = React.useRef(null);
-  const [selectedCategoryItem, setSelectedCategoryItem] = useState(null)
+  const [selectedCategoryItem, setSelectedCategoryItem] = useState(null);
+
   const handleModalClose = (selectedCategory) =>{
      setCategory(selectedCategory.name);
-    setSelectedCategoryItem(selectedCategory)
+      setSelectedCategoryItem(selectedCategory)
   }
+
   return (
     <View>
         <Modal
@@ -124,72 +128,111 @@ const AddExpense = ({route, navigation}) => {
             </Box>
       </Heading>
       <Box border={1} borderRadius="md" m={7} p={5} bg={'#ffffff'}>
-        <Box w="100%">
-         <FormControl isRequired>
-          <Stack>
-            <HStack>
-              <Center size={20}>
-                <FormControl.Label>Date</FormControl.Label>
-              </Center>
-              <Flex w="75%">
-                <Center>
-                  <Input
-                    value={date.toString().substr(4, 12)}
-                    InputRightElement={
-                      <Icon
-                        as={<MaterialIcons name="date-range" />}
-                        size="md"
-                        onPress={showDatepicker}
-                        m={2}
+            <Box w="100%">
+            <FormControl isRequired>
+              <Stack>
+                <HStack>
+                  <Center size={20}>
+                    <FormControl.Label>Date</FormControl.Label>
+                  </Center>
+                  <Flex w="75%">
+                    <Center>
+                      <Input
+                        value={date.toString().substr(4, 12)}
+                        InputRightElement={
+                          <Icon
+                            as={<MaterialIcons name="date-range" />}
+                            size="md"
+                            onPress={showDatepicker}
+                            m={2}
+                            _light={{
+                              color: 'black',
+                            }}
+                            _dark={{
+                              color: 'gray.300',
+                            }}
+                          />
+                        }
+                        placeholder="Date"
                         _light={{
-                          color: 'black',
+                          placeholderTextColor: 'blueGray.400',
                         }}
                         _dark={{
-                          color: 'gray.300',
+                          placeholderTextColor: 'blueGray.50',
                         }}
                       />
-                    }
-                    placeholder="Date"
-                    _light={{
-                      placeholderTextColor: 'blueGray.400',
-                    }}
-                    _dark={{
-                      placeholderTextColor: 'blueGray.50',
-                    }}
-                  />
-                </Center>
-              </Flex>
-            </HStack>
-          </Stack>
-          </FormControl>
-        </Box>
-        {show && (
-          <DateTimePicker
-            testID="dateTimePicker"
-            value={date}
-            mode={'date'}
-            is24Hour={true}
-            display="default"
-            onChange={onChange}
-          />
-        )}
+                    </Center>
+                  </Flex>
+                </HStack>
+              </Stack>
+              </FormControl>
+            </Box>
+            {show && (
+              <DateTimePicker
+                testID="dateTimePicker"
+                value={date}
+                mode={'date'}
+                is24Hour={true}
+                display="default"
+                onChange={onChange}
+              />
+            )}
 
-        <Box w="100%">
-        <FormControl isRequired>
-          <Stack>
-            <HStack>
-              <Center size={20}>
-                <FormControl.Label>Category</FormControl.Label>
-              </Center>
-              <Flex w={'75%'}  >
-                <Pressable onPress={() => setModalVisible(!modalVisible)}>
-                <Input
-                  value={category}
-                  isDisabled={true}
-                  
-                  InputRightElement={
+            <Box w="100%">
+            <FormControl isRequired>
+              <Stack>
+                <HStack>
+                  <Center size={20}>
+                    <FormControl.Label>Category</FormControl.Label>
+                  </Center>
+                  <Flex w={'75%'}  >
+                    <Pressable onPress={() => setModalVisible(!modalVisible)}>
+                    <Input
+                      value={category}
+                      isDisabled={true}
+                      
+                      InputRightElement={
+                        <Icon
+                          as={<MaterialIcons name="category" />}
+                          size="md"
+                          m={2}
+                          _light={{
+                            color: 'black',
+                          }}
+                          _dark={{
+                            color: 'gray.300',
+                          }}
+                        />
+                      }
+                      placeholder="Input" // mx={4}
+                      _light={{
+                        placeholderTextColor: 'blueGray.400',
+                      }}
+                      _dark={{
+                        placeholderTextColor: 'blueGray.50',
+                      }}
+                    />
+                    </Pressable>
+                  </Flex>
+                </HStack>
+              </Stack>
+              </FormControl>
+            </Box>
+            <Box w="100%">
+              <FormControl isRequired>
+              <Stack>
+                <HStack>
+                  <Center size={20}>
+                    <FormControl.Label>Amount</FormControl.Label>
+                  </Center>
+                  <Flex w={'75%'}>
+                  <Input 
+                   keyboardType = 'numeric'
+                   value={amount}
+                    onChange={amountChange}
+                    InputRightElement={
                     <Icon
-                      as={<MaterialIcons name="category" />}
+                      as={<FontAwesome name="rupee" />}
                       size="md"
                       m={2}
                       _light={{
@@ -199,68 +242,26 @@ const AddExpense = ({route, navigation}) => {
                         color: 'gray.300',
                       }}
                     />
-                  }
-                  placeholder="Input" // mx={4}
-                  _light={{
-                    placeholderTextColor: 'blueGray.400',
-                  }}
-                  _dark={{
-                    placeholderTextColor: 'blueGray.50',
-                  }}
-                />
-                </Pressable>
-              </Flex>
-            </HStack>
-          </Stack>
-          </FormControl>
-        </Box>
-        <Box w="100%">
-          <FormControl isRequired>
-          <Stack>
-            <HStack>
-              <Center size={20}>
-                <FormControl.Label>Amount</FormControl.Label>
-              </Center>
-              <Flex w={'75%'}>
-              <NumberInput>
-                <NumberInputField 
-                  type={"number"}
-                  value={amount}
-                  onChange={amountChange}
-                  p={3}
-                  InputRightElement={
-                    <Icon
-                      as={<MaterialIcons name="attach-money" />}
-                      size="md"
-                      m={2}
-                      _light={{
-                        color: 'black',
-                      }}
-                      _dark={{
-                        color: 'gray.300',
-                      }}
-                    />
-                  }
-                  placeholder="Enter amount"
-                  _light={{
-                    placeholderTextColor: 'blueGray.400',
-                  }}
-                  _dark={{
-                    placeholderTextColor: 'blueGray.50',
-                  }}
-                />
-                </NumberInput>
-              </Flex>
-            </HStack>
-          </Stack>
-          </FormControl>
-        </Box>
-      </Box>
+                    }
+                    placeholder="Enter amount"
+                        _light={{
+                          placeholderTextColor: 'blueGray.400',
+                        }}
+                        _dark={{
+                          placeholderTextColor: 'blueGray.50',
+                        }}/>
+                 
+                  </Flex>
+                </HStack>
+              </Stack>
+              </FormControl>
+            </Box>
+          </Box>
       <Box>
         <Stack alignItems="center">
           <HStack space={3} alignItems="center">
             <Center>
-              <Button size={'lg'} onPress={()=> AddValue()}>Add</Button>
+              <Button size={'lg'} onPress={()=> AddValue()} disabled={(category == null || (amount == null || amount == '')) ? true : false}>Add</Button>
             </Center>
           </HStack>
         </Stack>
